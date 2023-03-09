@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password    
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ADMIN_PASSWORD}
+      MYSQL_DATABASE: espocrm
+      MYSQL_USER: espocrm
+      MYSQL_PASSWORD: ${ADMIN_PASSWORD}
+    volumes:
+      - ./mysql:/var/lib/mysql
+    restart: always
+
+  espocrm:
+    image: espocrm/espocrm
+    environment:
+      ESPOCRM_DATABASE_HOST: mysql
+      ESPOCRM_DATABASE_USER: espocrm
+      ESPOCRM_DATABASE_PASSWORD: ${ADMIN_PASSWORD}
+      ESPOCRM_ADMIN_USERNAME: ${ADMIN_EMAIL}
+      ESPOCRM_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ESPOCRM_SITE_URL: ${BASE_URL}
+    volumes:
+      - ./espocrm:/var/www/html
+    restart: always
+    ports:
+      - 172.17.0.1:8686:80
+
+  espocrm-daemon:
+    image: espocrm/espocrm
+    volumes:
+      - ./espocrm:/var/www/html
+    restart: always
+    entrypoint: docker-daemon.sh
+
+  espocrm-websocket:
+    image: espocrm/espocrm
+    environment:
+      ESPOCRM_CONFIG_USE_WEB_SOCKET: "true"
+      ESPOCRM_CONFIG_WEB_SOCKET_URL: "ws://localhost:8781"
+      ESPOCRM_CONFIG_WEB_SOCKET_ZERO_M_Q_SUBSCRIBER_DSN: "tcp://*:7777"
+      ESPOCRM_CONFIG_WEB_SOCKET_ZERO_M_Q_SUBMISSION_DSN: "tcp://espocrm-websocket:7777"
+    volumes:
+      - ./espocrm:/var/www/html
+    restart: always
+    entrypoint: docker-websocket.sh
+    ports:
+      - 172.17.0.1:8781:8080
