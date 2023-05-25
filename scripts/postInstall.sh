@@ -3,7 +3,7 @@ set -o allexport; source .env; set +o allexport;
 
 #wait until the server is ready
 echo "Waiting for software to be ready ..."
-sleep 30s;
+sleep 90s;
 
 sed -i "s|'outboundEmailFromAddress' => '',|'outboundEmailFromAddress' => '${SMTP_FROM_EMAIL}',|g" ./espocrm/data/config.php
 sed -i "s|'smtpServer' => '',|'smtpServer' => '${SMTP_HOST}',|g" ./espocrm/data/config.php
