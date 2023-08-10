@@ -57,13 +57,13 @@ Here are some example snippets to help you get started creating a container.
     version: '3.3'
     services:
         mysql:
-            image: mysql:8
-            command: --default-authentication-plugin=mysql_native_password    
+            image: mysql:${MYSQL_VERSION_TAG}
+            command: --default-authentication-plugin=mysql_native_password
             environment:
-                MYSQL_ROOT_PASSWORD: ${ADMIN_PASSWORD}
-                MYSQL_DATABASE: espocrm
-                MYSQL_USER: espocrm
-                MYSQL_PASSWORD: ${ADMIN_PASSWORD}
+                MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+                MYSQL_DATABASE: ${MYSQL_DATABASE}
+                MYSQL_USER: ${MYSQL_USER}
+                MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             volumes:
                 - ./mysql:/var/lib/mysql
             restart: always
@@ -71,12 +71,12 @@ Here are some example snippets to help you get started creating a container.
         espocrm:
             image: elestio4test/espocrm:${SOFTWARE_VERSION_TAG}
             environment:
-                ESPOCRM_DATABASE_HOST: mysql
-                ESPOCRM_DATABASE_USER: espocrm
-                ESPOCRM_DATABASE_PASSWORD: ${ADMIN_PASSWORD}
-                ESPOCRM_ADMIN_USERNAME: ${ADMIN_EMAIL}
-                ESPOCRM_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-                ESPOCRM_SITE_URL: ${BASE_URL}
+                ESPOCRM_DATABASE_HOST: ${ESPOCRM_DATABASE_HOST}
+                ESPOCRM_DATABASE_USER: ${ESPOCRM_DATABASE_USER}
+                ESPOCRM_DATABASE_PASSWORD: ${ESPOCRM_DATABASE_PASSWORD}
+                ESPOCRM_ADMIN_USERNAME: ${ESPOCRM_ADMIN_USERNAME}
+                ESPOCRM_ADMIN_PASSWORD: ${ESPOCRM_ADMIN_PASSWORD}
+                ESPOCRM_SITE_URL: ${ESPOCRM_SITE_URL}
             volumes:
                 - ./espocrm:/var/www/html
             restart: always
@@ -93,8 +93,8 @@ Here are some example snippets to help you get started creating a container.
         espocrm-websocket:
             image: espocrm/espocrm:${SOFTWARE_VERSION_TAG}
             environment:
-                ESPOCRM_CONFIG_USE_WEB_SOCKET: "true"
-                ESPOCRM_CONFIG_WEB_SOCKET_URL: "ws://localhost:8781"
+                ESPOCRM_CONFIG_USE_WEB_SOCKET: ${ESPOCRM_CONFIG_USE_WEB_SOCKET}
+                ESPOCRM_CONFIG_WEB_SOCKET_URL: ${ESPOCRM_CONFIG_WEB_SOCKET_URL}
                 ESPOCRM_CONFIG_WEB_SOCKET_ZERO_M_Q_SUBSCRIBER_DSN: "tcp://*:7777"
                 ESPOCRM_CONFIG_WEB_SOCKET_ZERO_M_Q_SUBMISSION_DSN: "tcp://espocrm-websocket:7777"
             volumes:
@@ -104,7 +104,24 @@ Here are some example snippets to help you get started creating a container.
             ports:
                 - 172.17.0.1:8781:8080
 
+### Environment variables
 
+|           Variable            |     Value (example)     |
+| :---------------------------: | :---------------------: |
+|     SOFTWARE_VERSION_TAG      |         latest          |
+|       MYSQL_VERSION_TAG       |         latest          |
+|      MYSQL_ROOT_PASSWORD      |    your-db-password     |
+|        MYSQL_DATABASE         |      your-db-name       |
+|          MYSQL_USER           |        your-user        |
+|        MYSQL_PASSWORD         |    your-db-password     |
+|     ESPOCRM_DATABASE_HOST     |       mysql:3306        |
+|     ESPOCRM_DATABASE_USER     |        your-user        |
+|   ESPOCRM_DATABASE_PASSWORD   |    your-db-password     |
+|    ESPOCRM_ADMIN_USERNAME     |          admin          |
+|    ESPOCRM_ADMIN_PASSWORD     |      your-password      |
+|       ESPOCRM_SITE_URL        | http://your-domain:8686 |
+| ESPOCRM_CONFIG_USE_WEB_SOCKET |          true           |
+| ESPOCRM_CONFIG_WEB_SOCKET_URL |  ws://your-domain:8781  |
 
 # Maintenance
 
